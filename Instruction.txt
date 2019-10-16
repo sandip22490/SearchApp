@@ -1,0 +1,39 @@
+------------------
+Steps to perform
+------------------
+	- Download and install AWS tools from here - https://aws.amazon.com/powershell/
+	- Login into AWS account and navigate to IAM and create new user with programatic access capabilities
+	- Configure AWS profile on your machine/VM
+		- navigate to users .aws folder and add below section in config file
+			[admin]
+			region = us-east-1
+			output = json
+		- open credential file at same location and add below section
+			[admin]
+			aws_access_key_id = YOUR ACCESS KEY
+			aws_secret_access_key = YOUR SECRET KEY
+	- Clone/Build your MVC application
+	- Create RDS instance (SQL Server)
+		- sql server express edition
+		- t2.micro
+		- public access = yes
+		- choose existing VPC = default
+	- Deploy doc-search stack
+		- https://github.com/aws-samples/amazon-comprehend-doc-search
+			- region N virginia (us-east-1)
+	- Navigate to Elastic Search service
+		- copy Endpoint
+	- Configure following parameters in your web.config under appSetting section
+		- AccessKeyId
+		- SecretAccessKey
+		- S3UploadBucket
+		- EsEndpoint
+		
+		- add nuget package (awssdk.s3)
+	- Publish MVC application using Publish to Elastic BeanStalk option
+	- check file upload functionality
+	- login to elastic search to see uploaded file database
+		- create index
+	- create database manually and table as well (Not required if we are using Elastic Search)
+	- integrate ES search functionality
+		- add neuget package - Elasticsearch.Net.Aws and NEST

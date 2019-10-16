@@ -1,0 +1,167 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+<style>
+    h2 {
+        font-weight: bold;
+    }
+
+    h3 {
+        font-weight: bold;
+        display: none;
+    }
+</style>
+<script src="~/Scripts/jquery-3.3.1.min.js"></script>
+
+@if (Request.IsAuthenticated)
+{
+    <br />
+
+    using (Html.BeginForm())
+    {
+        <p>
+            <div class="form-horizontal">
+                @Html.TextBox("SearchString", null, new { @placeholder = "Find by Full name", style = "height: 34px; padding: 6px 12px; font-size: 14px;border: 1px solid #ccc; border-radius: 4px" })
+                @Html.TextBox("SearchString1", null, new { @placeholder = "Find by Location", style = "height: 34px; padding: 6px 12px; font-size: 14px;border: 1px solid #ccc; border-radius: 4px" })
+                @Html.TextBox("SearchString2", null, new { @placeholder = "Find by Skills", style = "height: 34px; padding: 6px 12px; font-size: 14px;border: 1px solid #ccc; border-radius: 4px" })
+                <input type="submit" value="Search" class="btn" style="border-color:#093e52; color:#093e52 " />
+                <button type="button" class="btn btn-outline-light float-right" data-toggle="modal" data-target="#myModal">Upload New Resume</button>
+            </div>
+            <br />
+
+        </p>
+    }
+
+    <table id="example" class="table table-hover" style="border-radius:10px; background-color:#9dc3ca; color:black">
+        <thead class="thead text-center" style="background-color:#093e52; color:white;border-radius:10px">
+            <tr>
+                <th>
+                    Full Name
+                </th>
+                <th>
+                    Location
+                </th>
+                <th>
+                    Skills
+                </th>
+                <th>
+                    Download Resume
+                </th>
+            </tr>
+        </thead>
+        <tbody class="text-center">
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.Encode(item.FullName)
+                    </td>
+                    <td>
+                        @Html.Encode(item.Location)
+                    </td>
+                    <td>
+                        @Html.Encode(item.Skills)
+                    </td>
+                    <td></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div>
+
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Upload Resume</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col">
+                                @Html.TextBox("file", "", new { @id = "FileUpload1", @class = "form-control", @type = "file" })
+                            </div>
+                            <div class="col">
+                                <input type="submit" id="btnUpload" class="btn btn-primary float-right" value="Upload" />
+                            </div>
+                        </div>
+                        <h3 id="message">@ViewBag.Message</h3>
+                    </div>
+                    <div class="form-group">
+                        <div id="success" class="alert alert-success" style="display:none">
+                            <strong>File upload successfull!</strong>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div id="error" class="alert alert-danger" style="display:none">
+                            <strong>File Should be in Pdf Or Doc</strong>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal" id="close">Close</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+}
+else
+{
+    { Response.Redirect("~/Account/Login"); }
+}
+<script>
+
+    $(document).ready(function () {
+        $('#btnUpload').click(function () {
+            //$("#myModal").hide();
+            // Checking whether FormData is available in browser
+            if (window.FormData !== undefined) {
+
+                var fileUpload = $("#FileUpload1").get(0);
+                var files = fileUpload.files;
+
+                // Create FormData object
+                var fileData = new FormData();
+
+                // Looping over all files and add it to FormData object
+                for (var i = 0; i < files.length; i++) {
+                    fileData.append(files[i].name, files[i]);
+                }
+
+                // Adding one more key to FormData object
+                fileData.append('username', 'Meha');
+
+                $.ajax({
+                    url: '/Upload/UploadFiles',
+                    type: "POST",
+                    contentType: false, // Not to set any content header
+                    processData: false, // Not to process data
+                    data: fileData,
+                    success: function (result) {
+                        if (result.IsSuccess) {
+                            $("#success").show();
+                            $("#success").fadeOut(4000);
+                        }
+                        else {
+                            $("#error").text(result.Message);
+                            $("#error").show();
+                            $("#error").fadeOut(4000);
+                        }
+                    },
+                });
+            } else {
+                alert("FormData is not supported.");
+            }
+        });
+        $("#close").click(function () {
+            window.location.reload();
+        });
+    });
+</script>
+
